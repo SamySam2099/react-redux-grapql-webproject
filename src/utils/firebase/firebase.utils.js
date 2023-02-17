@@ -5,13 +5,14 @@ import {
   signInWithRedirect,
   signInWithPopup,
   GoogleAuthProvider,
+  createUserWithEmailAndPassword,
 } from 'firebase/auth'
 
 import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore'
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY,
+  apiKey: 'AIzaSyD6_-q7cE0eAWAPSSyiBgXdfmEGLV8bozg', //process.env.FIREBASE_API_KEY,
   authDomain: 'sam-clothing-db-ea453.firebaseapp.com',
   projectId: 'sam-clothing-db-ea453',
   storageBucket: 'sam-clothing-db-ea453.appspot.com',
@@ -33,7 +34,10 @@ export const signInWithGooglePopup = () => signInWithPopup(auth, provider)
 
 export const db = getFirestore()
 
-export const createUserDocumentFromAuth = async userAuth => {
+export const createUserDocumentFromAuth = async (
+  userAuth,
+  additionalInformation = {}
+) => {
   const userDocRef = doc(db, 'users', userAuth.uid)
 
   const userSnapshot = await getDoc(userDocRef)
@@ -47,6 +51,7 @@ export const createUserDocumentFromAuth = async userAuth => {
         displayName,
         email,
         createdAt,
+        ...additionalInformation,
       })
     } catch (err) {
       console.log('Error creating the user', err.message)
@@ -54,4 +59,10 @@ export const createUserDocumentFromAuth = async userAuth => {
   }
 
   return userDocRef
+}
+
+export const createAuthUserWithEmailAndPassword = async (email, password) => {
+  if (!email || !password) return
+
+  return await createUserWithEmailAndPassword(auth, email, password)
 }
